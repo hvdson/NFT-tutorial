@@ -30,4 +30,14 @@ contract("colour", (accounts) => {
       assert.equal(symbol, "COLOUR");
     })
   })
+
+  describe("minting", async () => {
+    
+    it("creates a new token", async () => {
+      await contract.mint("#FFFFFF")
+      const totalSupply = await contract.totalSupply();
+      assert.equal(totalSupply, 1);
+
+    })
+  })
 })
