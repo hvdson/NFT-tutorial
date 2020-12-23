@@ -15,6 +15,7 @@ contract Colour is ERC721 {
   function mint(string memory _colour) public {
     // Require unique colour
     // .push no longer returns length! version ^0.6.0
+    require(!_colourExists[_colour]);
     colours.push(_colour);
     // todo: is this redundant?
     uint _id = getLengthColours();
@@ -22,7 +23,7 @@ contract Colour is ERC721 {
     _colourExists[_colour] = true;
   }
 
-  function getLengthColours() public view returns(uint) {
+  function getLengthColours() internal view returns(uint) {
     return colours.length;
   }
 }
