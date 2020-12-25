@@ -38,7 +38,7 @@ const App = () => {
   const [contract, setContract] = useState(null);
   useEffect(() => {
     createContractFromNetworkData();
-  }, [account])
+  }, [])
 
   async function createContractFromNetworkData() {
     const networkId = await web3.eth.net.getId();
@@ -74,9 +74,35 @@ const App = () => {
   // it works!
   // todo: refactor and clean up
   const mapColours = () => {
-    return colours.map((item) => {
-      return <span>{item}</span>
+    return colours.map((colour, key) => {
+      return (
+        <div className="text-center col-md-3 mb-3" key={key}>
+          <div className="token" style={{ backgroundColor: colour }}></div>
+          <div>{colour}</div>
+        </div>
+      )
     })
+  }
+
+  function doStuff(e) {
+    e.preventDefault();
+    window.alert('wee');
+  }
+
+  const [mintInput, setMintInput] = useState('')
+  
+  function handleMintInput(e) {
+    setMintInput(e.target.value);
+  }
+
+  async function mintTokenThenSetColours(e) {
+    e.preventDefault();
+    console.log(account);
+    await contract.methods.mint(mintInput).send({ from: account, gas: 5000000 })
+      .once('receipt', (receipt) => {
+        setColours([...colours, mintInput])
+      })
+    setMintInput('')
   }
 
   return (
@@ -89,21 +115,32 @@ const App = () => {
         >
           NFT Tutorial
         </span>
-        <ul className="navbar-nav">
+        <ul className="navbar-nav px-3">
           <li className="nav-item d-none d-sm-none d-sm-block p-1">
-            <span className="text-white">{account}</span>
+            <small><span className="text-white">{account}</span></small>
           </li>
         </ul>
       </nav>
+      
       <div className="container-fluid mt-5">
+      <button className="btn btn-primary" onClick={loadWeb3ForMetamask}>Connect</button>
         <div className="row">
           <main role="main" className="col-lg-12 d-flex text-center">
             <div className="content mr-auto ml-auto">
-              <h1>yooo this some NFT shit</h1>
-              <hr/>
-              <button className="btn btn-primary" onClick={loadWeb3ForMetamask}>Connect</button>
+              <h1>Issue Token</h1>
+              <form onSubmit={mintTokenThenSetColours}>
+                <input 
+                  onChange={handleMintInput} 
+                  className="form-control mb-1" 
+                  value={mintInput} 
+                  type="text" 
+                  placeholder="e.g. #FFFFFF"
+                />
+                <button type="submit" className="btn btn-block btn-primary mb-1">Mint</button>
+              </form>
             </div>
           </main>
+          <hr/>
           {mapColours()}
         </div>
       </div>
